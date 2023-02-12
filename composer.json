@@ -1,7 +1,7 @@
 {
 	"name": "wp-media/package-template",
 	"description": "Repository template for our packages",
-	"homepage": "https://github.com/wp-media/package-template",
+	"homepage": "https://github.com/Ugolaf/wp_plugin-sitemap",
 	"license": "GPL-2.0+",
 	"authors": [
 		{
