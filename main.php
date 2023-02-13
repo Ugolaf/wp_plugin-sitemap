@@ -29,5 +29,7 @@ function sitemap_generator_disabled() {
 register_deactivation_hook( __FILE__, 'sitemap_generator_disabled' );
 
 require_once plugin_dir_path( __FILE__ ) . 'inc/admin/settings_page.php';
+require_once plugin_dir_path( __FILE__ ) . 'inc/classes/crawler.php';
+
 
 
