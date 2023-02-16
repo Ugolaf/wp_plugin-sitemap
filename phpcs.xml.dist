@@ -27,14 +27,9 @@
 	<rule ref="WordPress">
         <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
 	</rule>
-    <rule ref="WordPress.WP.I18n">
-        <properties>
-            <property name="text_domain" type="array" value="rocket" />
-        </properties>
-    </rule>
     <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
         <properties>
-            <property name="prefixes" type="array" value="rocket,wp_rocket" />
+            <property name="prefixes" type="array" value="sitemap_generator" />
         </properties>
     </rule>
     <rule ref="WordPress.Files.FileName">
