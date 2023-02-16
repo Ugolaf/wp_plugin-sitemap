@@ -8,13 +8,21 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once plugin_dir_path( __FILE__ ) . 'inc/vues/admin/settings_page.php';
+require_once plugin_dir_path( __FILE__ ) . 'inc/classes/crawler.php';
+require_once plugin_dir_path( __FILE__ ) . 'inc/classes/parser.php';
+require_once plugin_dir_path( __FILE__ ) . 'inc/classes/db.php';
+
 /**
  * Function to trigger when the plugin is activated
  *
  * @return void
  */
 function sitemap_generator_activate() {
-	// Code that will run when the plugin is activated.
+	$db = new Sitemap_Generator_Db();
+	$db->set_tables();
+	$crawler = new Sitemap_Generator_Crawler( $db );
+	$crawler->generate_website_sitemap( 3 );
 }
 register_activation_hook( __FILE__, 'sitemap_generator_activate' );
 
@@ -24,12 +32,10 @@ register_activation_hook( __FILE__, 'sitemap_generator_activate' );
  * @return void
  */
 function sitemap_generator_disabled() {
-	// Code that will run when the plugin is deactivated.
+	$db = new Sitemap_Generator_Db();
+	$db->delete_tables();
 }
 register_deactivation_hook( __FILE__, 'sitemap_generator_disabled' );
-
-require_once plugin_dir_path( __FILE__ ) . 'inc/admin/settings_page.php';
-require_once plugin_dir_path( __FILE__ ) . 'inc/classes/crawler.php';
 
 
 
