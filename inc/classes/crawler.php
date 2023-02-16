@@ -1,4 +1,5 @@
 <?php
+require_once 'db.php';
 
 /**
  * Crawler to store and generate sitemap
@@ -6,46 +7,113 @@
 class Sitemap_Generator_Crawler {
 
 	/**
+	 * Database instance
+	 *
+	 * @var \Sitemap_Generator_Db
+	 */
+	public $db;
+
+	/**
+	 * Class constructor
+	 *
+	 * @param  mixed $wpdb Database instance to use.
+	 * @return void
+	 */
+	public function __construct( $wpdb ) {
+		$this->db = $wpdb;
+	}
+
+	/**
 	 * Generate website sitemap recursivly
 	 *
 	 * @param  mixed $depth Max depth to recursivly parse dom.
-	 * @return string
+	 * @return int|boolean
 	 */
 	public function generate_website_sitemap( $depth ) {
-		$sitemap_array = [];
-		$current_page  = get_home_url();
+		$sitemap_array           = [];
+		$sitemap_already_crawled = [];
+		$current_page            = get_home_url();
 
-		$this->generate_website_sitemap_recursive( $current_page, $depth, $sitemap_array );
+		$current_key = $this->db->new_entrie(
+			'website_sitemap',
+			[
+				'date_created' => current_time( 'mysql' ),
+				'home_page'    => $current_page,
+			],
+			[
+				'%s',
+				'%s',
+			]
+		);
+		$this->generate_website_sitemap_recursive( $current_key, $current_page, $depth, $sitemap_array, $sitemap_already_crawled );
 
-		$sitemap = '<html><head><title>Sitemap</title></head><body><h1>Sitemap</h1><ul>';
-		foreach ( $sitemap_array as $page ) {
-				$sitemap .= '<li><a href="' . get_permalink( $page ) . '">' . $page . '</a></li>';
+		error_log( __FUNCTION__ . ' current_key' . "\n" . print_r( $current_key, 1 ) );
+		error_log( __FUNCTION__ . ' sitemap_array' . "\n" . print_r( $sitemap_array, 1 ) );
+		error_log( __FUNCTION__ . ' final sitemap_already_crawled' . "\n" . print_r( $sitemap_already_crawled, 1 ) );
+
+		return $current_key;
+	}
+
+	/**
+	 * Recursively get linked page.
+	 *
+	 * @param  mixed $current_key Database initial entrie.
+	 * @param  mixed $current_page Current url to crawl.
+	 * @param  mixed $depth Current depth.
+	 * @param  mixed $sitemap Reference of sitemap array.
+	 * @param  mixed $sitemap_already_crawled Reference of links already crawled.
+	 * @return void
+	 */
+	private function generate_website_sitemap_recursive( $current_key, $current_page, $depth, &$sitemap, &$sitemap_already_crawled ) {
+		if ( $depth > 0 && ! in_array( $current_page, $sitemap_already_crawled, true ) ) {
+			$sitemap[]                 = $current_page;
+			$sitemap_already_crawled[] = $current_page;
+			$linked_pages              = $this->get_linked_pages( $current_page, $sitemap_already_crawled );
+
+			if ( ! isset( $sitemap[ $current_page ] ) ) {
+				$sitemap[ $current_page ] = [];
+			}
+
+			$array_entries = [];
+
+			foreach ( $linked_pages as $name => $link ) {
+				$array_entries[] = [
+					'sitemap_id'  => $current_key,
+					'parent_link' => $current_page,
+					'link'        => $link,
+					'name'        => $name,
+				];
+			}
+
+			$this->db->new_entries(
+				'website_sitemap_links',
+				$array_entries,
+				[
+					'%d',
+					'%s',
+					'%s',
+					'%s',
+				]
+			);
+
+			foreach ( $linked_pages as $linked_page_title => $linked_page_url ) {
+				if ( strpos( $linked_page_url, get_home_url() ) === 0 && ! in_array( $linked_page_url, $sitemap_already_crawled, true ) ) {
+					$this->generate_website_sitemap_recursive( $current_key, $linked_page_url, $depth - 1, $sitemap[ $current_page ], $sitemap_already_crawled );
+				}
+			}
 		}
-		$sitemap .= '</ul></body></html>';
-
-		file_put_contents( ABSPATH . 'sitemap.html', $sitemap );
-
-		/*
-		 add_filter('rewrite_rules_array', 'sitemap_html_rewrite_rules');
-		function sitemap_html_rewrite_rules($rules) {
-			// Add a rewrite rule for the sitemap.html file
-			$new_rules = array('sitemap\.html$' => 'sitemap.html');
-			$rules += $new_rules;
-			return $rules;
-		}*/
-
-		return $sitemap;
 	}
 
 	/**
 	 * Crawl links by finding all a href html tags.
 	 *
 	 * @param  string $url Current url to crawl.
+	 * @param  mixed  $sitemap_already_crawled Reference of links already crawled.
 	 * @return array
 	 */
-	private function get_linked_pages( $url ) {
+	private function get_linked_pages( $url, &$sitemap_already_crawled ) {
 
-		if ( strpos( $url, get_home_url() ) !== false ) {
+		if ( strpos( $url, get_home_url() ) === 0 ) {
 			$response = wp_remote_get( $url );
 			if ( is_array( $response ) && ! is_wp_error( $response ) ) {
 				$html = wp_remote_retrieve_body( $response );
@@ -55,11 +123,8 @@ class Sitemap_Generator_Crawler {
 
 				$links = $dom->getElementsByTagName( 'a' );
 
-				error_log( __FUNCTION__ . ' links' . "\n" . print_r( $links, 1 ) );
-
 				$linked_pages = [];
 				foreach ( $links as $link ) {
-					error_log( __FUNCTION__ . ' link' . "\n" . print_r( $link, 1 ) );
 					$linked_pages[ $link->nodeValue ] = $link->getAttribute( 'href' );
 				}
 
@@ -68,26 +133,5 @@ class Sitemap_Generator_Crawler {
 			}
 		}
 		return [];
-	}
-
-	/**
-	 * Recursively get linked page.
-	 *
-	 * @param  mixed $current_page Current url to crawl.
-	 * @param  mixed $depth Current depth.
-	 * @param  mixed $sitemap Reference of sitemap array.
-	 * @return void
-	 */
-	private function generate_website_sitemap_recursive( $current_page, $depth, &$sitemap ) {
-
-		$sitemap[] = $current_page;
-
-		if ( $depth > 0 ) {
-			$linked_pages = $this->get_linked_pages( $current_page );
-			error_log( __FUNCTION__ . ' linked_pages' . "\n" . print_r( $linked_pages, 1 ) );
-			foreach ( $linked_pages as $linked_page ) {
-					$this->generate_website_sitemap_recursive( $linked_page, $depth - 1, $sitemap );
-			}
-		}
 	}
 }
