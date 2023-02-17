@@ -47,10 +47,6 @@ class Sitemap_Generator_Crawler {
 		);
 		$this->generate_website_sitemap_recursive( $current_key, $current_page, $depth, $sitemap_array, $sitemap_already_crawled );
 
-		error_log( __FUNCTION__ . ' current_key' . "\n" . print_r( $current_key, 1 ) );
-		error_log( __FUNCTION__ . ' sitemap_array' . "\n" . print_r( $sitemap_array, 1 ) );
-		error_log( __FUNCTION__ . ' final sitemap_already_crawled' . "\n" . print_r( $sitemap_already_crawled, 1 ) );
-
 		return $current_key;
 	}
 
@@ -119,13 +115,14 @@ class Sitemap_Generator_Crawler {
 				$html = wp_remote_retrieve_body( $response );
 
 				$dom = new DOMDocument();
-				@$dom->loadHTML( $html );
+				// Warning in silence because we do not control the incoming dom.
+				@$dom->loadHTML( $html ); //phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 
 				$links = $dom->getElementsByTagName( 'a' );
 
 				$linked_pages = [];
 				foreach ( $links as $link ) {
-					$linked_pages[ $link->nodeValue ] = $link->getAttribute( 'href' );
+					$linked_pages[ $link->nodeValue ] = $link->getAttribute( 'href' ); //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				}
 
 				return $linked_pages;

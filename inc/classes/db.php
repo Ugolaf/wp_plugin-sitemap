@@ -1,4 +1,9 @@
 <?php
+/**
+ * As found on this WordPress issue https://github.com/WordPress/WordPress-Coding-Standards/issues/508,
+ * this rule (WordPress.DB.PreparedSQL.NotPrepared)
+ * will be ignored along this file
+ */
 
 /**
  * Crawler to store and generate sitemap
@@ -32,8 +37,8 @@ class Sitemap_Generator_Db {
 		$sitemap_links = $this->wpdb->prefix . 'website_sitemap_links';
 		$sitemap       = $this->wpdb->prefix . 'website_sitemap';
 
-		$this->wpdb->query( "DROP TABLE IF EXISTS $sitemap_links" );
-		$this->wpdb->query( "DROP TABLE IF EXISTS $sitemap" );
+		$this->wpdb->query( "DROP TABLE IF EXISTS $sitemap_links" ); // phpcs:ignore
+		$this->wpdb->query( "DROP TABLE IF EXISTS $sitemap" ); // phpcs:ignore
 	}
 
 	/**
@@ -44,7 +49,7 @@ class Sitemap_Generator_Db {
 	public function set_tables() {
 
 		$sitemap_table_name = $this->wpdb->prefix . 'website_sitemap';
-		if ( $this->wpdb->get_var( "SHOW TABLES LIKE '$sitemap_table_name'" ) !== $sitemap_table_name ) {
+		if ( $this->wpdb->get_var( "SHOW TABLES LIKE '$sitemap_table_name'" ) !== $sitemap_table_name ) { // phpcs:ignore
 			$sql = "CREATE TABLE $sitemap_table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         date_created datetime NOT NULL,
@@ -56,7 +61,7 @@ class Sitemap_Generator_Db {
 		}
 
 		$sitemap_links_table_name = $this->wpdb->prefix . 'website_sitemap_links';
-		if ( $this->wpdb->get_var( "SHOW TABLES LIKE '$sitemap_links_table_name'" ) !== $sitemap_links_table_name ) {
+		if ( $this->wpdb->get_var( "SHOW TABLES LIKE '$sitemap_links_table_name'" ) !== $sitemap_links_table_name ) { // phpcs:ignore
 			$sql = "CREATE TABLE $sitemap_links_table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         sitemap_id mediumint(9) NOT NULL,
@@ -104,13 +109,13 @@ class Sitemap_Generator_Db {
 		$ids = [];
 		foreach ( $values_array as $values ) {
 			$query           = $this->wpdb->prepare(
-				"SELECT id FROM {$this->wpdb->prefix}{$table} WHERE sitemap_id = %d AND parent_link = %s AND link = %s AND name = %s",
+				"SELECT id FROM {$this->wpdb->prefix}{$table} WHERE sitemap_id = %d AND parent_link = %s AND link = %s AND name = %s", // phpcs:ignore
 				$values['sitemap_id'],
 				$values['parent_link'],
 				$values['link'],
 				$values['name']
 			);
-			$existing_record = $this->wpdb->get_var( $query );
+			$existing_record = $this->wpdb->get_var( $query ); // phpcs:ignore
 
 			if ( $existing_record ) {
 				$ids[] = $existing_record;
@@ -138,17 +143,16 @@ class Sitemap_Generator_Db {
 	public function get_child_links( $sitemap_id, $parent_link, $exclude_links = [] ) {
 
 		$query = $this->wpdb->prepare(
-			"SELECT link, name FROM {$this->wpdb->prefix}website_sitemap_links
-			WHERE parent_link = %s AND sitemap_id = %s",
+			"SELECT link, name FROM {$this->wpdb->prefix}website_sitemap_links WHERE parent_link = %s AND sitemap_id = %s", // phpcs:ignore
 			[ $parent_link, $sitemap_id ]
 		);
 
 		if ( ! empty( $exclude_links ) ) {
 			$placeholders = implode( ',', array_fill( 0, count( $exclude_links ), '%s' ) );
-			$query       .= $this->wpdb->prepare( " AND link NOT IN ($placeholders)", $exclude_links );
+			$query       .= $this->wpdb->prepare( ' AND link NOT IN (%s)', $placeholders );
 		}
 
-		$results = $this->wpdb->get_results( $query, ARRAY_A );
+		$results = $this->wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return $results;
 	}

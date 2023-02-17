@@ -37,11 +37,9 @@ class Sitemap_Generator_Parser {
 
 		$links_already_showed = [];
 
-		$sitemap = '<html><head><meta charset="UTF-8"><title>Sitemap</title></head><body><h1>Sitemap</h1>';
+		$sitemap  = '<html><head><meta charset="UTF-8"><title>Sitemap</title></head><body><h1>Sitemap</h1>';
 		$sitemap .= $this->fill_ul_sitemap( $sitemap_id, $home_page, $links_already_showed );
 		$sitemap .= '</body></html>';
-
-		error_log( __FUNCTION__ . ' sitemap' . "\n" . print_r( $sitemap, 1 ) );
 
 		global $wp_filesystem;
 		if ( empty( $wp_filesystem ) ) {
@@ -63,8 +61,6 @@ class Sitemap_Generator_Parser {
 	private function fill_ul_sitemap( $sitemap_id, $parent_link, &$links_already_showed ) {
 
 		$child_links = $this->db->get_child_links( $sitemap_id, $parent_link, $links_already_showed );
-		error_log( __FUNCTION__ . ' child_links' . "\n" . print_r( $child_links, 1 ) );
-		error_log( __FUNCTION__ . ' links_already_showed' . "\n" . print_r( $links_already_showed, 1 ) );
 
 		if ( empty( $child_links ) ) {
 			return '';
@@ -74,13 +70,9 @@ class Sitemap_Generator_Parser {
 
 		$html = '';
 		foreach ( $child_links as $child_link ) {
-
 			$html .= '<li><a href="' . esc_url( $child_link['link'] ) . '">' . esc_html( $child_link['name'] ) . '</a>';
 			$html .= $this->fill_ul_sitemap( $sitemap_id, $child_link['link'], $links_already_showed );
 			$html .= '</li>';
-
-			error_log( __FUNCTION__ . ' html' . "\n" . print_r( $html, 1 ) );
-
 		}
 
 		return '<ul>' . $html . '</ul>';

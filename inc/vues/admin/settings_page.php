@@ -49,10 +49,12 @@ function sitemap_generator_render_settings_page() {
 			$parser->generate_html( $sitemap_id );
 
 			echo '<div class="notice notice-success is-dismissible">
-      			<p>The sitemap has been generated, consult it from this <a href="/sitemap.html" _blank="">url</a>.</p>
-      		</div>';
+      				<p>The sitemap has been generated, consult it from this <a href="/sitemap.html" _blank="">url</a>.</p>
+      			</div>';
 		} else {
-
+			echo '<div class="notice notice-error is-dismissible">
+							<p><There was an error generating the sitemap./p>
+						</div>';
 		}
 	}
 	$pages = get_pages();
@@ -60,23 +62,23 @@ function sitemap_generator_render_settings_page() {
 	?>
 
 <div class="wrap">
-  <h1>Sitemap Generator</h1>
-  <form method="post">
-	<table class="form-table">
-	  <tr>
-		<th>Maximum depth for sitemap generation</th>
-		<td>
-		  <label>
-			<input type="integer" name="max_depth" value="<?php echo esc_html( $max_depth ); ?>" >
-		  </label>
-		</td>
-	  </tr>
-	</table>
-	<?php wp_nonce_field( 'generate_sitemap' ); ?>
-	<p class="submit">
-	  <input type="submit" name="submit" class="button-primary" value="Generate sitemap">
-	</p>
-  </form>
+	<h1>Sitemap Generator</h1>
+	<form method="post">
+		<table class="form-table">
+			<tr>
+				<th>Maximum depth for sitemap generation</th>
+				<td>
+					<label>
+						<input type="integer" name="max_depth" value="<?php echo esc_html( $max_depth ); ?>" >
+					</label>
+				</td>
+			</tr>
+		</table>
+		<?php wp_nonce_field( 'generate_sitemap' ); ?>
+		<p class="submit">
+			<input type="submit" name="submit" class="button-primary" value="Generate sitemap">
+		</p>
+	</form>
 </div>
 
 	<?php
