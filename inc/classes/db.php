@@ -149,7 +149,7 @@ class Sitemap_Generator_Db {
 
 		if ( ! empty( $exclude_links ) ) {
 			$placeholders = implode( ',', array_fill( 0, count( $exclude_links ), '%s' ) );
-			$query       .= $this->wpdb->prepare( ' AND link NOT IN (%s)', $placeholders );
+			$query       .= $this->wpdb->prepare( " AND link NOT IN ($placeholders)", $exclude_links ); // phpcs:ignore
 		}
 
 		$results = $this->wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
