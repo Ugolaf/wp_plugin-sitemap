@@ -51,6 +51,27 @@ class Sitemap_Generator_Parser {
 	}
 
 	/**
+	 * Generate sitemap to render as a tree
+	 *
+	 * @return string
+	 */
+	public function generate_latest_tree_view() {
+		$webiste_sitemap = $this->db->get_latest_entry( 'website_sitemap' );
+		if ( ! isset( $webiste_sitemap['id'], $webiste_sitemap['date_created'], $webiste_sitemap['home_page'] ) ) {
+			return '';
+		}
+
+		$links_already_showed = [];
+
+		$sitemap  = '<p><em>Generated the ' . $webiste_sitemap['date_created']
+		. ' with (' . $webiste_sitemap['home_page'] . ') as home page.</em></p>'
+		. '<ul class="tree"><li><span> Home page</span>';
+		$sitemap .= $this->fill_ul_sitemap( $webiste_sitemap['id'], $webiste_sitemap['home_page'], $links_already_showed );
+		$sitemap .= '</li></u>';
+
+		return $sitemap;
+	}
+	/**
 	 * Fill li or ul if current element is an array
 	 *
 	 * @param  mixed $sitemap_id Sitemap Id database entrie.
@@ -70,7 +91,7 @@ class Sitemap_Generator_Parser {
 
 		$html = '';
 		foreach ( $child_links as $child_link ) {
-			$html .= '<li><a href="' . esc_url( $child_link['link'] ) . '">' . esc_html( $child_link['name'] ) . '</a>';
+			$html .= '<li><span><a href="' . esc_url( $child_link['link'] ) . '">' . esc_html( $child_link['name'] ) . '</a></span>';
 			$html .= $this->fill_ul_sitemap( $sitemap_id, $child_link['link'], $links_already_showed );
 			$html .= '</li>';
 		}
