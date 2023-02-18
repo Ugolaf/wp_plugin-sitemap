@@ -78,14 +78,14 @@ class Sitemap_Generator_Db {
 	}
 
 	/**
-	 * Add a new entrie in database and get id inserted
+	 * Add a new entry in database and get id inserted
 	 *
 	 * @param  mixed $table Database table.
 	 * @param  mixed $values Values array to insert.
 	 * @param  mixed $types Types array to respect.
 	 * @return int|boolean
 	 */
-	public function new_entrie( $table, $values, $types ) {
+	public function new_entry( $table, $values, $types ) {
 
 		if ( $this->wpdb->insert(
 			$this->wpdb->prefix . $table,
@@ -95,6 +95,22 @@ class Sitemap_Generator_Db {
 			return $this->wpdb->insert_id;
 		}
 		return false;
+	}
+
+	/**
+	 * Get the latest entry from a given database table.
+	 *
+	 * @param string $table_name The name of the database table to query.
+	 * @return array|null The latest entry in the table, or null if the table is empty.
+	 */
+	public function get_latest_entry( $table_name ) {
+		global $wpdb;
+
+		$result = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}{$table_name} ORDER BY id DESC LIMIT 1", // phpcs:ignore
+			ARRAY_A
+		);
+
+		return empty( $result ) ? null : $result[0];
 	}
 
 	/**

@@ -34,7 +34,7 @@ class Sitemap_Generator_Crawler {
 		$sitemap_already_crawled = [];
 		$current_page            = get_home_url();
 
-		$current_key = $this->db->new_entrie(
+		$current_key = $this->db->new_entry(
 			'website_sitemap',
 			[
 				'date_created' => current_time( 'mysql' ),
