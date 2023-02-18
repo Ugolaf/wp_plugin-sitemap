@@ -12,7 +12,10 @@
 	],
 	"type": "library",
 	"config": {
-		"sort-packages": true
+		"sort-packages": true,
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
 	},
 	"support": {
 		"issues": "https://github.com/Ugolaf/wp_plugin-sitemap/issues",
@@ -21,7 +24,7 @@
 	"require-dev": {
 		"php": "^5.6 || ^7",
 		"brain/monkey": "^2.0",
-		"dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
 		"phpcompatibility/phpcompatibility-wp": "^2.0",
 		"wp-coding-standards/wpcs": "^2"
 	},
