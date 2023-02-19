@@ -21,6 +21,9 @@
 		"issues": "https://github.com/Ugolaf/wp_plugin-sitemap/issues",
 		"source": "https://github.com/Ugolaf/wp_plugin-sitemap"
 	},
+	"platform": {
+		"php": "5.6.0"
+	},
 	"require-dev": {
 		"php": "^5.6 || ^7",
 		"brain/monkey": "^2.0",
