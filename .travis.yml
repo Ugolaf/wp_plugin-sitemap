@@ -2,11 +2,6 @@ sudo: false
 language: php
 services:
   - mysql
-notifications:
-  slack: wp-media:nnBz5DMaiRLNaEqIStaUgygW
-  email:
-    on_success: never
-    on_failure: never
 branches:
   only:
   - master
@@ -35,6 +30,7 @@ matrix:
 before_install:
   # Unless we need XDebug, disable it for improved performance.
   - phpenv config-rm xdebug.ini || return 0
+  - composer self-update --1
   - rm composer.lock
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - composer remove --dev phpstan/phpstan szepeviktor/phpstan-wordpress
