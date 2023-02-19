@@ -45,7 +45,9 @@ class Sitemap_Generator_Crawler {
 				'%s',
 			]
 		);
-		$this->generate_website_sitemap_recursive( $current_key, $current_page, $depth, $sitemap_array, $sitemap_already_crawled );
+		if ( $current_key ) {
+			$this->generate_website_sitemap_recursive( $current_key, $current_page, $depth, $sitemap_array, $sitemap_already_crawled );
+		}
 
 		return $current_key;
 	}

@@ -42,6 +42,20 @@ class Sitemap_Generator_Db {
 	}
 
 	/**
+	 * Truncate database tables for this plugin
+	 *
+	 * @return void
+	 */
+	public function truncate_tables() {
+
+		$sitemap_links = $this->wpdb->prefix . 'website_sitemap_links';
+		$sitemap       = $this->wpdb->prefix . 'website_sitemap';
+
+		$this->wpdb->query( "DELETE FROM $sitemap_links" ); // phpcs:ignore
+		$this->wpdb->query( "DELETE FROM $sitemap" ); // phpcs:ignore
+	}
+
+	/**
 	 * Set database tables for this plugin
 	 *
 	 * @return void

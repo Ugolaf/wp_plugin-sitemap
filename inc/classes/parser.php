@@ -58,7 +58,9 @@ class Sitemap_Generator_Parser {
 	public function generate_latest_tree_view() {
 		$webiste_sitemap = $this->db->get_latest_entry( 'website_sitemap' );
 		if ( ! isset( $webiste_sitemap['id'], $webiste_sitemap['date_created'], $webiste_sitemap['home_page'] ) ) {
-			return '';
+			return '<div class="notice notice-error is-dismissible">
+			<p><There was an error generating the sitemap. Please reactivate this plugin/p>
+		</div>';
 		}
 
 		$links_already_showed = [];
