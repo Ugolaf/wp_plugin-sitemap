@@ -42,18 +42,6 @@ function sitemap_generator_render_settings_page() {
 
 		update_option( 'website_sitemap_max_depth', $max_depth );
 
-		global $wp_filesystem;
-		if ( empty( $wp_filesystem ) ) {
-			require_once ABSPATH . '/wp-admin/includes/file.php';
-			WP_Filesystem();
-		}
-
-		$db->truncate_tables();
-
-		if ( $wp_filesystem->exists( ABSPATH . 'sitemap.html' ) ) {
-			$wp_filesystem->delete( ABSPATH . 'sitemap.html' );
-		}
-
 		$crawler    = new Sitemap_Generator_Crawler( $db );
 		$sitemap_id = $crawler->generate_website_sitemap( $max_depth );
 
@@ -65,7 +53,7 @@ function sitemap_generator_render_settings_page() {
       			</div>';
 		} else {
 			echo '<div class="notice notice-error is-dismissible">
-							<p><There was an error generating the sitemap./p>
+							<p>There was an error generating the sitemap. Please reactivate this plugin.</p>
 						</div>';
 		}
 	}

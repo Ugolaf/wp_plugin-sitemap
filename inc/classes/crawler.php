@@ -21,6 +21,18 @@ class Sitemap_Generator_Crawler {
 	 */
 	public function __construct( $wpdb ) {
 		$this->db = $wpdb;
+
+		global $wp_filesystem;
+		if ( empty( $wp_filesystem ) ) {
+			require_once ABSPATH . '/wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+
+		$this->db->truncate_tables();
+
+		if ( $wp_filesystem->exists( ABSPATH . 'sitemap.html' ) ) {
+			$wp_filesystem->delete( ABSPATH . 'sitemap.html' );
+		}
 	}
 
 	/**

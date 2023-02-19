@@ -58,14 +58,17 @@ add_action( 'init', 'sitemap_generator_schedule_job' );
 function sitemap_generator_do_this_hourly() {
 	$db = new Sitemap_Generator_Db();
 
-	$max_depth = get_option( 'website_sitemap_max_depth', 5 );
+	$initial_launch = $db->get_latest_entry( 'website_sitemap' );
+	$max_depth      = get_option( 'website_sitemap_max_depth', 5 );
 
-	$crawler    = new Sitemap_Generator_Crawler( $db );
-	$sitemap_id = $crawler->generate_website_sitemap( $max_depth );
+	if ( ! is_null( $initial_launch ) ) {
+		$crawler    = new Sitemap_Generator_Crawler( $db );
+		$sitemap_id = $crawler->generate_website_sitemap( $max_depth );
 
-	if ( is_int( $sitemap_id ) ) {
-		$parser = new Sitemap_Generator_Parser( $db );
-		$parser->generate_html( $sitemap_id );
+		if ( is_int( $sitemap_id ) ) {
+			$parser = new Sitemap_Generator_Parser( $db );
+			$parser->generate_html( $sitemap_id );
+		}
 	}
 }
 
