@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sitemap Generator
  * Description: Generates a sitemap for the current website
- * Version: 0.0.1
+ * Version: 1.0.0
  * Author: Ugo LAFAILLE
  */
 
